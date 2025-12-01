@@ -65,6 +65,7 @@ uint256 public saleCounter1155;
     // Fee calculation - done
     // NFT transfer
     // onReceived() revert
+    // withdraw fn for owner - done
 
 
 

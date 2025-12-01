@@ -6,7 +6,7 @@ import './MarketPlace.sol'  ;
 contract MarketplaceBuy is Marketplace {
     
 
-    function buy721WithETH(uint256 saleId) external payable {
+    function buy721WithETH(uint256 saleId) public payable {
         Sale721 memory s = sales721[saleId]; // copy by value 
         require(s.seller != address(0), "Sale not found");
         require(s.paymentToken == address(0), "Not ETH sale");
@@ -27,9 +27,20 @@ contract MarketplaceBuy is Marketplace {
         delete sales721[saleId];
     }
 
+    // paymentToken 
+    // collectedFes[paymentToken] += fee 
 
+    function buyWithAnyIn721(uint256 saleId) external payable{
+         Sale721 memory s = sales721[saleId]; // copy by value 
+        if(s.paymentToken == address(0)){
+            buy721WithETH(saleId);
+        }
+        else{
 
-    function buy1155WithETH(uint256 saleId) external payable {
+        }
+    }
+
+    function buy1155WithETH(uint256 saleId) public payable {
     Sale1155 memory s = sales1155[saleId]; // here we are dong copy by value 
     require(s.seller != address(0), "Sale not found");
     require(s.paymentToken == address(0), "Not ETH sale");
@@ -60,5 +71,16 @@ contract MarketplaceBuy is Marketplace {
     delete activeSale1155[s.sftToken][s.tokenId];
     delete sales1155[saleId];
 }
+
+
+    function buyWithAnyIn1155(uint256 saleId) external payable{
+         Sale1155 memory s = sales1155[saleId]; // copy by value 
+        if(s.paymentToken == address(0)){
+            buy1155WithETH(saleId);
+        }
+        else{
+
+        }
+    }
 
 }
