@@ -27,6 +27,40 @@ contract MarketplaceBuy is Marketplace {
         delete sales721[saleId];
     }
 
+    function buy721WithERC20(uint256 saleId) public {
+        Sale721 memory s = sales721[saleId]; // copy by value
+
+        // Basic checks
+        require(s.seller != address(0), "Sale not found");
+        require(s.paymentToken != address(0), "Not an ERC20 sale"); // Ensure it is an ERC20 sale
+        require(s.price > 0, "Price must be greater than zero");
+
+        uint256 fee = (s.price * 55) / 10000;
+        uint256 sellerAmount = s.price - fee;
+
+        // Transfer the ERC20 tokens from the buyer (msg.sender) to the seller/contract
+        // The buyer must have previously called the ERC20 token's `approve` function
+        // to grant this contract an allowance. The `transferFrom` is called by our
+        // marketplace contract, pulling from the buyer's balance.
+
+        // Get an instance of the ERC20 token contract
+        IERC20 tokenContract = IERC20(s.paymentToken);
+
+        // Transfer seller's portion
+        // The require statement checks that the transfer was successful and reverts if not
+        require(tokenContract.transferFrom(msg.sender, s.seller, sellerAmount), "Token transfer to seller failed");
+
+   
+       
+        collectedFees[s.paymentToken] += fee; // now here the key will be s.paymentToken
+
+        // 4. Transfer the NFT from the seller to the buyer (caller)
+        IERC721(s.nftAddress).transferFrom(s.seller, msg.sender, s.tokenId);
+
+        delete activeSale721[s.nftAddress][s.tokenId];
+        delete sales721[saleId];
+    }
+
     // paymentToken 
     // collectedFes[paymentToken] += fee 
 
@@ -36,7 +70,7 @@ contract MarketplaceBuy is Marketplace {
             buy721WithETH(saleId);
         }
         else{
-
+            buy721WithERC20(saleId);
         }
     }
 
