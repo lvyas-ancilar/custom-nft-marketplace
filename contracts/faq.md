@@ -8,6 +8,3 @@ erc20 token address exist but eth's doesnt
 ## safeTransferFrom vs safeBatchTranferFrom !?
 Ans : safeTransferFrom : one tokenId and the amount of that token which needs to be send at once
 safeBatchTranferFrom : transferring multiple types of tokens at once 
-
-## weth vs eth ?
-Ans : 

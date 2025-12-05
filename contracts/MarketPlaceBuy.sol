@@ -2,9 +2,11 @@
 pragma solidity ^0.8.20;
 
 import './MarketPlace.sol'  ;
+import './WETH.sol';
 
 contract MarketplaceBuy is Marketplace {
-    
+
+    constructor(address _WETH) Marketplace(_WETH) {} 
 
     function buy721WithETH(uint256 saleId) public payable {
         Sale721 memory s = sales721[saleId]; // copy by value 
@@ -107,13 +109,55 @@ contract MarketplaceBuy is Marketplace {
 }
 
 
+function buy1155WithERC20(uint256 saleId) public {
+    Sale1155 memory s = sales1155[saleId];
+    require(s.seller != address(0), "Sale not found");
+    require(s.paymentToken != address(0), "Not an ERC20 sale"); // ERC20 sale only
+    require(s.price > 0, "Price must be above zero");
+
+    uint256 fee = (s.price * 55) / 10000;
+    uint256 sellerAmount = s.price - fee;
+
+    IERC20 payToken = IERC20(s.paymentToken);
+
+    // Buyer must have approved this contract so transferFrom works
+    require(
+        payToken.transferFrom(msg.sender, s.seller, sellerAmount),
+        "Token transfer to seller failed"
+    );
+
+    // Transfer fee to marketplace contract
+    require(
+        payToken.transferFrom(msg.sender, address(this), fee),
+        "Fee transfer failed"
+    );
+
+    // Add fee to collectedFees for this specific token
+    collectedFees[s.paymentToken] += fee;
+
+    // Transfer ERC1155 token to buyer
+    IERC1155(s.sftToken).safeTransferFrom(
+        s.seller,
+        msg.sender,
+        s.tokenId,
+        s.amount,
+        ""
+    );
+
+    // Delete sale
+    delete activeSale1155[s.sftToken][s.tokenId];
+    delete sales1155[saleId];
+}
+
+
+
     function buyWithAnyIn1155(uint256 saleId) external payable{
          Sale1155 memory s = sales1155[saleId]; // copy by value 
         if(s.paymentToken == address(0)){
             buy1155WithETH(saleId);
         }
         else{
-
+            buy1155WithERC20(saleId);
         }
     }
 

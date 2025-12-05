@@ -6,10 +6,15 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
-import {MyToken} from './MyToken.sol';
 
 contract Marketplace is Ownable{
-    MyToken public mytoken;
+
+    address public WETH;
+
+    constructor(address _WETH) {
+    WETH = _WETH;
+    } 
+
 
     
     struct Sale1155 {
@@ -68,6 +73,7 @@ uint256 public saleCounter1155;
     // onReceived() revert
     // withdraw fn for owner - done
 
+   
 
 
 
@@ -175,11 +181,19 @@ function createSaleOrderFor1155( address sftToken, uint256 tokenId, uint256 amou
 }
 
 
-// owner can withdraw its money , which he will be getting for every buy 
-function withdrawETHFees() external onlyOwner {
-    uint256 amount = collectedFees[address(0)];
-    collectedFees[address(0)] = 0;
-    payable(owner()).transfer(amount); // owner() - returns the address of current owner
+function withdrawFees(address token) external onlyOwner {
+    uint256 amount = collectedFees[token];
+    require(amount > 0, "No fees to withdraw");
+
+    collectedFees[token] = 0; // reset first 
+
+   
+    if (token == address(0)) {
+        payable(owner()).transfer(amount);
+    } 
+    else {
+        require(IERC20(token).transfer(owner(), amount), "ERC20 transfer failed");
+    }
 }
 
 
