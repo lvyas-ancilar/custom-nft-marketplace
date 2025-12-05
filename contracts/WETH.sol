@@ -2,27 +2,18 @@
 
 pragma solidity ^0.8.0;
 
-import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
-
-contract WETH is ERC20{
-  address public owner;
-
-
-    constructor(string memory name , string memory symbol , uint256 initialSupply)
-    ERC20(name, symbol) {
-        owner = msg.sender;                     
-        _mint(msg.sender, initialSupply);      
-    }
-
-    fallback() external payable {
-        deposit();
-    }
-
-    function deposit() public payable{
-        _mint(msg.sender, msg.value);
-    }
-
-    function withdraw(uint256 amount) external {
-
-    }
+interface IWETH {
+    function deposit() external payable;
+    function withdraw(uint256) external;
+    function transfer(address to, uint256 value) external returns (bool);
 }
+
+// this interface helps my buy marketplace to intercat with weth
+
+ // conversion : If a sale is created for ETH, buyer can pay in WETH.
+                    //If a sale is created for WETH, buyer can pay in ETH.
+
+    // case 1: Sale wants ETH -> buyer pays WETH 
+            // so we will unrap weth into eth 
+    // Case 2:  Sale wants WETH -> buyer pays ETH 
+    // we will wrap eth into weth
