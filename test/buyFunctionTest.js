@@ -4,7 +4,7 @@ const { ethers } = require("hardhat");
 
 function calculateFee(amountWei) {
   const basis_point_fee = 55n;        // 55 basis points = 0.55%
-  const basis_point_div = 10000n; // standard basis point divisor
+  const basis_point_div = 10000n; // standard basis point divisor as 100% is 10,000
 
   return (amountWei * basis_point_fee) / basis_point_div;
 }
@@ -94,11 +94,11 @@ describe("Marketplace Buy Functions", function () {
     );
 
     await erc20.connect(buyer).approve(await marketplace.getAddress(), ethers.parseEther("10"));
-
+    // the buyer approve to marketplace to withdraw 10 erc2 token 
     await marketplace.connect(buyer).buy721WithERC20(1);
-
+    //buyer calls buy721WithERC20 with the listing ID 1.
     expect(await nft721.ownerOf(0)).to.equal(buyer.address);
-
+    // confirms that nft is transfeed
     const fee = (10n * 10n ** 18n * 55n) / 10000n; // price set is 10 so 10 * 10 power 18 and then mul;tiply by 55 basis points     
     expect(await marketplace.collectedFees(await erc20.getAddress())).to.equal(fee);
   });
