@@ -6,7 +6,7 @@ describe("Test for createSaleOrderFor721", function () {
 
   beforeEach(async () => {
     [owner, seller] = await ethers.getSigners();
-
+ 
     // Deploy simple ERC721
     const NFT = await ethers.getContractFactory("MyNFT721");
     nft = await NFT.deploy("MyNFT", "MNFT");
@@ -14,7 +14,7 @@ describe("Test for createSaleOrderFor721", function () {
 
     // Deploy marketplace
     const Marketplace = await ethers.getContractFactory("Marketplace");
-    marketplace = await Marketplace.deploy(WETH_ADDRESS);
+    marketplace = await Marketplace.deploy();
     await marketplace.waitForDeployment();
 
     // Mint token for seller 
@@ -31,7 +31,7 @@ describe("Test for createSaleOrderFor721", function () {
       await nft.getAddress(),
       0,                           // tokenId = 0
       ethers.parseEther("1"),      // price = 1 ETH
-      ethers.ZeroAddress           // accept ETH
+      ethers.ZeroAddress           // accept ETH 
     );
 
     // saleCounter should now be 1

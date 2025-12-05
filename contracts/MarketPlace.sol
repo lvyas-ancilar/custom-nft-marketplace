@@ -9,14 +9,6 @@ import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
 contract Marketplace is Ownable{
 
-    address public WETH;
-
-    constructor(address _WETH) {
-    WETH = _WETH;
-    } 
-
-
-    
     struct Sale1155 {
     address seller;
     address sftToken;

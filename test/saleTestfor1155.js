@@ -4,7 +4,7 @@ const { ethers } = require("hardhat");
 describe("Test for createSaleOrderFor1155", function () {
   let owner, seller, sft, marketplace;
     // Dummy WETH address for testing
-    WETH_ADDRESS = "0x0000000000000000000000000000000000000001";
+
   beforeEach(async () => {
     [owner, seller] = await ethers.getSigners();
 
@@ -15,7 +15,7 @@ describe("Test for createSaleOrderFor1155", function () {
 
     // Deploy Marketplace
     const Marketplace = await ethers.getContractFactory("Marketplace");
-    marketplace = await Marketplace.deploy(WETH_ADDRESS);
+    marketplace = await Marketplace.deploy();
     await marketplace.waitForDeployment();
 
     // Mint tokenId=1, amount=100 to seller

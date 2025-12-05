@@ -6,8 +6,6 @@ import './WETH.sol';
 
 contract MarketplaceBuy is Marketplace {
 
-    constructor(address _WETH) Marketplace(_WETH) {} 
-
     function buy721WithETH(uint256 saleId) public payable {
         Sale721 memory s = sales721[saleId]; // copy by value 
         require(s.seller != address(0), "Sale not found");
